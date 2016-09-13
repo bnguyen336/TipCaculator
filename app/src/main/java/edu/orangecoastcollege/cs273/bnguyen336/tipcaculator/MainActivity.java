@@ -1,17 +1,14 @@
 package edu.orangecoastcollege.cs273.bnguyen336.tipcaculator;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
-import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.SeekBar;
-import android.widget.TextClock;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import java.text.NumberFormat;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,7 +18,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView tipTextView;
     private TextView percentTextView;
     private TextView totalTextView;
+    private TextView taxTextView;
     private SeekBar percentSeekBar;
+
+    private static NumberFormat currency = NumberFormat.getCurrencyInstance();
 
     //Associate the controller with the needed model
     RestaurantBill currentBill = new RestaurantBill(0.0, 0.15);
@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         percentTextView = (TextView) findViewById(R.id.percentTextView);
         totalTextView = (TextView) findViewById(R.id.totalTextView);
         percentSeekBar = (SeekBar) findViewById(R.id.percentSeekBar);
+        taxTextView = (TextView) findViewById(R.id.taxTextView);
 
         amountEditText.addTextChangedListener(amountTextChangedListener);
 
@@ -45,8 +46,7 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 percentTextView.setText(String.valueOf(i) + "%");
                 currentBill.setTipPercent((double)i / 100);
-                tipTextView.setText("$" + String.format("%.2f", currentBill.getTipAmount() ));
-                totalTextView.setText("$" + String.format("%.2f", currentBill.getTotalAmount()));
+                calculateBill();
             }
 
             @Override
@@ -78,9 +78,8 @@ public class MainActivity extends AppCompatActivity {
                         amount = Double.parseDouble(charSequence.toString()) / 100.0;
                     }
                     currentBill.setAmount(amount);
-                    amountTextView.setText("$" + String.format("%.2f", currentBill.getAmount()));
-                    tipTextView.setText("$" + String.format("%.2f", currentBill.getTipAmount()));
-                    totalTextView.setText("$" + String.format("%.2f", currentBill.getTotalAmount()));
+                    amountTextView.setText(currency.format(currentBill.getAmount()));
+                    calculateBill();
                 } catch (NumberFormatException e) {
                     amountEditText.setText("");
                 }
@@ -90,5 +89,14 @@ public class MainActivity extends AppCompatActivity {
         public void afterTextChanged(Editable editable) {
             //Do nothing
         }
+    };
+
+    private void calculateBill(){
+        //Update tip amount text change
+        tipTextView.setText(currency.format(currentBill.getTipAmount()));
+        //Update total amount text change
+        totalTextView.setText(currency.format(currentBill.getTotalAmount()));
+        //Update total amount with tax
+        taxTextView.setText(currency.format(currentBill.getTotalWithTax()));
     };
 }

@@ -8,6 +8,7 @@ public class RestaurantBill {
     private double mTipPercent;
     private double mTipAmount;
     private double mTotalAmount;
+    private double mTotalWithTax;
 
     public RestaurantBill(double amount, double tipPercent) {
         this.mAmount = amount;
@@ -20,9 +21,8 @@ public class RestaurantBill {
         mTipPercent = 0.0;
         mTipAmount = 0.0;
         mTotalAmount = 0.0;
+        mTotalWithTax = 0.0;
     }
-
-
 
     public double getAmount() {
         return mAmount;
@@ -50,8 +50,13 @@ public class RestaurantBill {
         return mTotalAmount;
     }
 
+    public double getTotalWithTax() {
+        return mTotalWithTax;
+    }
+
     private void recalculateAmounts() {
         mTipAmount = mAmount * mTipPercent;
         mTotalAmount = mAmount + mTipAmount;
+        mTotalWithTax = mTotalAmount + (mAmount * 0.08);
     }
 }
